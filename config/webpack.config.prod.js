@@ -43,7 +43,7 @@ const cssFilename = 'static/css/[name].[contenthash:8].css';
 // To have this structure working with relative paths, we have to use custom options.
 const extractTextPluginOptions = shouldUseRelativeAssetPaths
     ? // Making sure that the publicPath goes back to to build folder.
-    {publicPath: Array(cssFilename.split('/').length).join('../')}
+    { publicPath: Array(cssFilename.split('/').length).join('../') }
     : {};
 
 // This is the production configuration.
@@ -113,21 +113,21 @@ module.exports = {
 
             // First, run the linter.
             // It's important to do this before Babel processes the JS.
-            {
-                test: /\.(js|jsx|mjs)$/,
-                enforce: 'pre',
-                use: [
-                    {
-                        options: {
-                            formatter: eslintFormatter,
-                            eslintPath: require.resolve('eslint'),
+            // {
+            //   test: /\.(js|jsx|mjs)$/,
+            //   enforce: 'pre',
+            //   use: [
+            //     {
+            //       options: {
+            //         formatter: eslintFormatter,
+            //         eslintPath: require.resolve('eslint'),
 
-                        },
-                        loader: require.resolve('eslint-loader'),
-                    },
-                ],
-                include: paths.appSrc,
-            },
+            //       },
+            //       loader: require.resolve('eslint-loader'),
+            //     },
+            //   ],
+            //   include: paths.appSrc,
+            // },
             {
                 // "oneOf" will traverse all following loaders until one will
                 // match the requirements. When no loader matches it will fall
@@ -149,22 +149,20 @@ module.exports = {
                         include: paths.appSrc,
                         loader: require.resolve('babel-loader'),
                         options: {
-
+                            plugins:[
+                                ['import',[{
+                                    libraryName:'antd',
+                                    style:true
+                                }]]
+                            ],
                             compact: true,
                         },
                     },
-                    // The notation here is somewhat confusing.
                     // "postcss" loader applies autoprefixer to our CSS.
                     // "css" loader resolves paths in CSS and adds assets as dependencies.
-                    // "style" loader normally turns CSS into JS modules injecting <style>,
-                    // but unlike in development configuration, we do something different.
-                    // `ExtractTextPlugin` first applies the "postcss" and "css" loaders
-                    // (second argument), then grabs the result CSS and puts it into a
-                    // separate file in our build process. This way we actually ship
-                    // a single CSS file in production instead of JS code injecting <style>
-                    // tags. If you use code splitting, however, any async bundles will still
-                    // use the "style" loader inside the async code so CSS from them won't be
-                    // in the main CSS file.
+                    // "style" loader turns CSS into JS modules that inject <style> tags.
+                    // In production, we use a plugin to extract that CSS to a file, but
+                    // in development "style" loader enables hot editing of CSS.
                     {
                         test: /\.less$/,
                         use: [
@@ -196,10 +194,22 @@ module.exports = {
                                 },
                             },
                             {
-                                loader: require.resolve('less-loader')
+                                loader:require.resolve('less-loader')
                             }
                         ],
                     },
+                    // The notation here is somewhat confusing.
+                    // "postcss" loader applies autoprefixer to our CSS.
+                    // "css" loader resolves paths in CSS and adds assets as dependencies.
+                    // "style" loader normally turns CSS into JS modules injecting <style>,
+                    // but unlike in development configuration, we do something different.
+                    // `ExtractTextPlugin` first applies the "postcss" and "css" loaders
+                    // (second argument), then grabs the result CSS and puts it into a
+                    // separate file in our build process. This way we actually ship
+                    // a single CSS file in production instead of JS code injecting <style>
+                    // tags. If you use code splitting, however, any async bundles will still
+                    // use the "style" loader inside the async code so CSS from them won't be
+                    // in the main CSS file.
                     {
                         test: /\.css$/,
                         loader: ExtractTextPlugin.extract(
